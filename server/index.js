@@ -1,5 +1,6 @@
 "use strict";
 
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const { getSettings } = require("./config");
@@ -8,7 +9,8 @@ const { collector } = require("./collector");
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
-const STATIC = path.join(__dirname, "..", "static");
+const WEB_DIST = path.join(__dirname, "..", "web", "dist");
+const LEGACY_STATIC = path.join(__dirname, "..", "static");
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, ...collector.status() });
@@ -50,17 +52,25 @@ app.post("/api/kill", async (req, res) => {
   }
 });
 
-app.get("/", (_req, res) => {
-  res.sendFile(path.join(STATIC, "index.html"));
-});
-
-app.use("/static", express.static(STATIC, { maxAge: 0 }));
+const useVue = fs.existsSync(path.join(WEB_DIST, "index.html"));
+if (useVue) {
+  app.use(express.static(WEB_DIST, { maxAge: 0 }));
+  app.get(/^\/(?!api(?:\/|$)).*/, (_req, res) => {
+    res.sendFile(path.join(WEB_DIST, "index.html"));
+  });
+} else {
+  console.warn("[warn] web/dist missing — serving legacy static/. Run: npm run build:web");
+  app.get("/", (_req, res) => {
+    res.sendFile(path.join(LEGACY_STATIC, "index.html"));
+  });
+  app.use("/static", express.static(LEGACY_STATIC, { maxAge: 0 }));
+}
 
 function main() {
   const cfg = getSettings();
   collector.startPolling();
   app.listen(cfg.listenPort, cfg.listenHost, () => {
-    console.log(`NPU Who (Node) http://${cfg.listenHost}:${cfg.listenPort}`);
+    console.log(`NPU Who (Node${useVue ? "+Vue" : ""}) http://${cfg.listenHost}:${cfg.listenPort}`);
     console.log(
       "hosts:",
       cfg.hosts.map((h) => `${h.name}@${h.host}`).join(", ")
