@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NPU Who · 占用查询</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="bg"></div>
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div>
+        <h1>NPU Who</h1>
+        <p class="sub">按登录 IP 定位谁在占用昇腾 NPU</p>
+      </div>
+    </div>
+    <div class="actions">
+      <div class="meta" id="meta">连接中…</div>
+      <button type="button" id="btnRefresh" class="btn">立即刷新</button>
+    </div>
+  </header>
+
+  <nav class="page-tabs" id="serverTabs" role="tablist" aria-label="机器分页"></nav>
+
+  <main id="tabPage" class="tab-page" role="tabpanel">
+    <section class="strip" id="alerts" hidden></section>
+    <section class="server-summary" id="serverSummary"></section>
+    <section class="devices" id="devices"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>登录来源</h2>
+        <p>同事都用 root 登录时，用客户端 IP 区分是谁</p>
+      </div>
+      <div class="session-grid" id="sessions"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>NPU 占用明细</h2>
+        <p>仅显示当前机器上的占用</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>NPU</th>
+              <th>登录 IP</th>
+              <th>备注/主机名</th>
+              <th>开始时间</th>
+              <th>模型</th>
+              <th>关键参数</th>
+              <th>PID</th>
+              <th>显存(MB)</th>
+              <th>命令 / 代码</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="occupants"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>本地服务 · 数据经 SSH 采集自目标机</span>
+    <span id="footMode"></span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
