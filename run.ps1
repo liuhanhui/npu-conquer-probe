@@ -2,13 +2,21 @@
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
-if (-not (Test-Path .\.venv\Scripts\python.exe)) {
-  Write-Host "Creating venv..."
-  python -m venv .venv
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+  Write-Error "未找到 node，请先安装 Node.js 18+"
 }
 
-& .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+if (-not (Test-Path .\node_modules)) {
+  Write-Host "Installing npm dependencies..."
+  npm install
+}
+
+if (-not (Test-Path .\.env)) {
+  Copy-Item .\.env.example .\.env
+  Write-Host "已创建 .env，请填写 NPU_HOSTS 后重新运行"
+}
+
 Write-Host ""
 Write-Host "Open http://127.0.0.1:8787"
 Write-Host "Ctrl+C to stop"
-& .\.venv\Scripts\python.exe -m app.main
+npm start
