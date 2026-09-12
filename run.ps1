@@ -7,8 +7,13 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
 }
 
 if (-not (Test-Path .\node_modules)) {
-  Write-Host "Installing npm dependencies..."
+  Write-Host "Installing server dependencies..."
   npm install
+}
+
+if (-not (Test-Path .\web\dist\index.html)) {
+  Write-Host "Building Vue frontend..."
+  npm run build:web
 }
 
 if (-not (Test-Path .\.env)) {

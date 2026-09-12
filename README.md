@@ -1,12 +1,12 @@
 # NPU Conquer Probe
 
-本地 **Node.js** Web 服务：通过 SSH 查询昇腾 NPU 占用（谁在用、来自哪个 IP、模型/启动参数），支持多机 TAB（A2 / 310）与一键结束进程。
+本地 **Node.js + Vue 3** Web 服务：通过 SSH 查询昇腾 NPU 占用（谁在用、来自哪个 IP、模型/启动参数），支持多机 TAB（A2 / 310）与一键结束进程。
 
 ## 技术栈
 
 - 本地服务：**Node.js ≥ 18** · Express · ssh2 · dotenv
-- 前端：原生 HTML / CSS / JS（`static/`）
-- 远程探针：`remote_probe.py`（上传到昇腾机用 `python3` 执行，机器上需有 Python / `npu-smi`）
+- 前端：**Vue 3** · Vite（源码在 `web/`，构建产物 `web/dist`）
+- 远程探针：`remote_probe.py`（上传到昇腾机用 `python3` 执行）
 
 ## 快速开始
 
@@ -20,10 +20,21 @@ copy .env.example .env
 
 ```bash
 npm install
+npm run build:web
 npm start
 ```
 
 打开 http://127.0.0.1:8787
+
+前端热更新开发：
+
+```bash
+# 终端 1
+npm start
+# 终端 2
+npm run dev:web
+# 打开 Vite 提示的 http://127.0.0.1:5173 （API 已代理到 8787）
+```
 
 ## 配置示例
 
@@ -39,9 +50,11 @@ REFRESH_SECONDS=8
 ## 目录
 
 ```
-server/           # Express 服务与 SSH 采集
-static/           # 前端
-remote_probe.py   # 远端探针（仍为 Python，跑在昇腾机上）
+server/           # Express API + SSH 采集
+web/              # Vue 3 前端源码
+web/dist/         # 前端构建产物（本地生成）
+remote_probe.py   # 远端探针
+static/           # 旧版原生前端（无 dist 时回退）
 package.json
 run.ps1
 ```

@@ -1,11 +1,14 @@
 {
   "name": "npu-conquer-probe",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Local Node service to probe Ascend NPU occupancy over SSH",
   "main": "server/index.js",
   "scripts": {
+    "build:web": "npm --prefix web install && npm --prefix web run build",
+    "prestart": "node -e \"const fs=require('fs');if(!fs.existsSync('web/dist/index.html')){console.log('Building Vue frontend...');require('child_process').execSync('npm run build:web',{stdio:'inherit'})}\"",
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "dev": "node --watch server/index.js",
+    "dev:web": "npm --prefix web run dev"
   },
   "engines": {
     "node": ">=18"
